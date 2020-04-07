@@ -40,6 +40,17 @@ public class SolutionRepresentation implements SolutionRepresentationInterface {
 	public SolutionRepresentationInterface clone() {
 
 		// TODO perform a DEEP clone of the solution representation!
+		//Setup variables
+		int solutionLength = this.getNumberOfLocations();
+		int[] clonedSolution = new int[solutionLength];
+		//Duplicate solution array
+		for(int i = 0; i< solutionLength; i++) {
+			clonedSolution[i] = this.getSolutionRepresentation()[i];
+		}
+		//New solutionrepresentation class
+		SolutionRepresentation returnSolutionRepresentation = new SolutionRepresentation(clonedSolution);
+		//Return solutionrepresentation class
+		return returnSolutionRepresentation;
 	}
 
 }
