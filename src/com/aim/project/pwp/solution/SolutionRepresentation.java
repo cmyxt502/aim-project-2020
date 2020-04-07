@@ -11,6 +11,7 @@ import com.aim.project.pwp.interfaces.SolutionRepresentationInterface;
 public class SolutionRepresentation implements SolutionRepresentationInterface {
 
 	private int[] aiSolutionRepresentation;
+	//This includes DEPOT & HOME
 
 	public SolutionRepresentation(int[] aiRepresentation) {
 
