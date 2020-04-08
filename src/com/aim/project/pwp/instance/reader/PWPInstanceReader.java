@@ -38,14 +38,14 @@ public class PWPInstanceReader implements PWPInstanceReaderInterface {
             		case "POSTAL_OFFICE":
             			thisLine = bfr.readLine();
             			//Create location
-            			postalOffice = new Location(Double.valueOf(thisLine.split("\t")[0]), Double.valueOf(thisLine.split("\t")[1]));
+            			postalOffice = new Location(Double.valueOf(thisLine.split(" |\t {1,}")[0]), Double.valueOf(thisLine.split(" |\t {1,}")[1]));
             			break;
             			
             		//Detect "Worker Address" coordinate
             		case "WORKER_ADDRESS":
             			thisLine = bfr.readLine();
             			//Create location
-            			workerAddress = new Location(Double.valueOf(thisLine.split("\t")[0]), Double.valueOf(thisLine.split("\t")[1]));
+            			workerAddress = new Location(Double.valueOf(thisLine.split(" |\t {1,}")[0]), Double.valueOf(thisLine.split(" |\t {1,}")[1]));
             			break;
             			
             		//Detect all "Postal Addresses" coordinates
@@ -58,7 +58,7 @@ public class PWPInstanceReader implements PWPInstanceReaderInterface {
             			//Loop through all lines
             			while (!thisLine.contains("EOF")) {
             				//Create location
-            				Location postalAddress = new Location(Double.valueOf(thisLine.split("\t")[0]), Double.valueOf(thisLine.split("\t")[1]));
+            				Location postalAddress = new Location(Double.valueOf(thisLine.split(" |\t {1,}")[0]), Double.valueOf(thisLine.split(" |\t {1,}")[1]));
                 			postalAddresses[i] = postalAddress;
             				//Read next line
             				thisLine = bfr.readLine();

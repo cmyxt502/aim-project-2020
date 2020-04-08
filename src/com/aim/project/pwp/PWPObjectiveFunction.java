@@ -15,6 +15,7 @@ public class PWPObjectiveFunction implements ObjectiveFunctionInterface {
 	}
 
 	@Override
+	//Standard evaluation of objective function value
 	public double getObjectiveFunctionValue(SolutionRepresentationInterface oSolution) {
 		//Setup variables
 		int solutionLength = oSolution.getNumberOfLocations();
