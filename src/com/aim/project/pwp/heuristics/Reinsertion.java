@@ -19,12 +19,12 @@ public class Reinsertion extends HeuristicOperators implements HeuristicInterfac
 
 	@Override
 	public double apply(PWPSolutionInterface solution, double depthOfSearch, double intensityOfMutation) {
-
+		
 	}
 
 	@Override
 	public boolean isCrossover() {
-
+		return false;
 	}
 
 	@Override

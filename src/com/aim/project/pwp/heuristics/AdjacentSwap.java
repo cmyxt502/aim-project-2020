@@ -24,7 +24,7 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
 
 	@Override
 	public boolean isCrossover() {
-
+		return false;
 	}
 
 	@Override

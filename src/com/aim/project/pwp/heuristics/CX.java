@@ -31,7 +31,7 @@ public class CX implements XOHeuristicInterface {
 
 	@Override
 	public boolean isCrossover() {
-
+		return true;
 	}
 
 	@Override

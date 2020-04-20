@@ -30,7 +30,7 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
 
 	@Override
 	public boolean isCrossover() {
-
+		return false;
 	}
 
 	@Override

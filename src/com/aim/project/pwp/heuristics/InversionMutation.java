@@ -24,7 +24,7 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
 	
 	@Override
 	public boolean isCrossover() {
-
+		return false;
 	}
 
 	@Override

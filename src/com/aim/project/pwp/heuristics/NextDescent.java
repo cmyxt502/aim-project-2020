@@ -31,7 +31,7 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
 
 	@Override
 	public boolean isCrossover() {
-
+		return false;
 	}
 
 	@Override
