@@ -55,11 +55,13 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	public PWPSolutionInterface getSolution(int index) {
 		
 		// TODO 
+		return aoMemoryOfSolutions[index];
 	}
 	
 	public PWPSolutionInterface getBestSolution() {
 		
 		// TODO 
+		return oBestSolution;
 	}
 
 	@Override
@@ -81,12 +83,34 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		
 		// TODO return the location IDs of the best solution including DEPOT and HOME locations
 		//		e.g. "DEPOT -> 0 -> 2 -> 1 -> HOME"
+		//Setup variables
+		int[] bestSolutionArray;
+		String bestSolutionString = "DEPOT"; //Set as "DEPOT" by default
+		//Retrieve solution representation
+		bestSolutionArray = oBestSolution.getSolutionRepresentation().getSolutionRepresentation();
+		//Loop through each solution to concatenate them
+		for (int i = 1; i < bestSolutionArray.length; i++) {
+			//Concatenate " -> "
+			bestSolutionString = bestSolutionString + " -> ";
+			//Concatenate "%LOCATION ID%"
+			bestSolutionString = bestSolutionString + String.valueOf(bestSolutionArray[i]);
+		}
+		//Concatenate "HOME"
+		bestSolutionString = bestSolutionString + "HOME";
+		//Return best solution in string
+		return bestSolutionString;
 	}
 
 	@Override
 	public boolean compareSolutions(int iIndexA, int iIndexB) {
 
 		// TODO return true if the objective values of the two solutions are the same, else false
+		if(aoMemoryOfSolutions[iIndexA].getObjectiveFunctionValue() == aoMemoryOfSolutions[iIndexB].getObjectiveFunctionValue()) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	@Override
@@ -96,19 +120,21 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		//			That is, that if we apply a heuristic to the solution in index 'b',
 		//			then it does not modify the solution in index 'a' or vice-versa.
 		
-		
+		aoMemoryOfSolutions[iIndexB] = aoMemoryOfSolutions[iIndexA].clone();
 	}
 
 	@Override
 	public double getBestSolutionValue() {
 
 		// TODO
+		return oBestSolution.getObjectiveFunctionValue();
 	}
 	
 	@Override
 	public double getFunctionValue(int index) {
 		
 		// TODO
+		return aoMemoryOfSolutions[index].getObjectiveFunctionValue();
 	}
 
 	@Override
@@ -192,7 +218,7 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	public String toString() {
 
 		// TODO change 'AAA' to be your username
-		return "AAA's G52AIM PWP";
+		return "scymc1's G52AIM PWP";
 	}
 	
 	private void updateBestSolution(int index) {
