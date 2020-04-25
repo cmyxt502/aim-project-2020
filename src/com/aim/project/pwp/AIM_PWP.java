@@ -4,6 +4,7 @@ package com.aim.project.pwp;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -92,7 +93,7 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		for (int i = 1; i < bestSolutionArray.length; i++) {
 			//Concatenate " -> "
 			bestSolutionString = bestSolutionString + " -> ";
-			//Concatenate "%LOCATION ID%"
+			//Concatenate location id
 			bestSolutionString = bestSolutionString + String.valueOf(bestSolutionArray[i]);
 		}
 		//Concatenate "HOME"
@@ -148,12 +149,58 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	public int[] getHeuristicsThatUseDepthOfSearch() {
 		
 		// TODO return the array of heuristic IDs that use depth of search.
+		//Setup variables
+		int totalHeuristics = aoHeuristics.length;
+		int totalDoSHeuristics = totalHeuristics; //Size of array that holds DoS mutation IDs
+		int heuristicsTemp[] = new int[totalHeuristics];
+		//Loop through all heuristics, set non-DoS ones' value in heuristicsTemp to -1
+		for (int i = 0; i < totalHeuristics; i++) {
+			heuristicsTemp[i] = i;
+			if (!aoHeuristics[i].usesDepthOfSearch()) {
+				heuristicsTemp[i] = -1;
+				totalDoSHeuristics--;
+			}
+		}
+		//Setup variables
+		int heuristicsDoS[] = new int[totalDoSHeuristics];
+		int k = 0;
+		//Loop through heuristicsTemp and copy non -1 values
+		for (int j = 0; j < totalHeuristics; j++) {
+			if(heuristicsTemp[j] != -1) {
+				heuristicsDoS[k] = heuristicsTemp[j];
+				k++;
+			}
+		}
+		return heuristicsDoS;
 	}
 
 	@Override
 	public int[] getHeuristicsThatUseIntensityOfMutation() {
 		
 		// TODO return the array of heuristic IDs that use intensity of mutation.
+		//Setup variables
+		int totalHeuristics = aoHeuristics.length;
+		int totalIoMHeuristics = totalHeuristics; //Size of array that holds IoM mutation IDs
+		int heuristicsTemp[] = new int[totalHeuristics];
+		//Loop through all heuristics, set non-DoS ones' value in heuristicsTemp to -1
+		for (int i = 0; i < totalHeuristics; i++) {
+			heuristicsTemp[i] = i;
+			if (!aoHeuristics[i].usesIntensityOfMutation()) {
+				heuristicsTemp[i] = -1;
+				totalIoMHeuristics--;
+			}
+		}
+		//Setup variables
+		int heuristicsIoM[] = new int[totalIoMHeuristics];
+		int k = 0;
+		//Loop through heuristicsTemp and copy non -1 values
+		for (int j = 0; j < totalHeuristics; j++) {
+			if(heuristicsTemp[j] != -1) {
+				heuristicsIoM[k] = heuristicsTemp[j];
+				k++;
+			}
+		}
+		return heuristicsIoM;
 	}
 
 	@Override
@@ -167,6 +214,7 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	public int getNumberOfInstances() {
 
 		// TODO return the number of available instances
+		return instanceFiles.length;
 	}
 
 	@Override
