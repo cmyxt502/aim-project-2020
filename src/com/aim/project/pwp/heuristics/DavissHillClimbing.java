@@ -35,11 +35,11 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
 
 	@Override
 	public boolean usesIntensityOfMutation() {
-
+		return false;
 	}
 
 	@Override
 	public boolean usesDepthOfSearch() {
-
+		return true;
 	}
 }

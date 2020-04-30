@@ -29,12 +29,12 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
 
 	@Override
 	public boolean usesIntensityOfMutation() {
-
+		return true;
 	}
 
 	@Override
 	public boolean usesDepthOfSearch() {
-
+		return false;
 	}
 
 }

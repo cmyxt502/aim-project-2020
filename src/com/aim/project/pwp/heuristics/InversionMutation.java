@@ -29,12 +29,12 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
 
 	@Override
 	public boolean usesIntensityOfMutation() {
-
+		return true;
 	}
 
 	@Override
 	public boolean usesDepthOfSearch() {
-
+		return false;
 	}
 
 }

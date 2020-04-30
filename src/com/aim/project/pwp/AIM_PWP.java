@@ -50,7 +50,8 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		super(seed);
 
 		// TODO - set default memory size and create the array of low-level heuristics
-		
+		int heuristicsCount = getNumberOfHeuristics();
+		aoMemoryOfSolutions= new PWPSolutionInterface[2];
 	}
 	
 	public PWPSolutionInterface getSolution(int index) {
@@ -259,6 +260,21 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	public String solutionToString(int index) {
 
 		// TODO
+		int[] SolutionArray;
+		String SolutionString = "DEPOT"; //Set as "DEPOT" by default
+		//Retrieve solution representation
+		SolutionArray = aoMemoryOfSolutions[index].getSolutionRepresentation().getSolutionRepresentation();
+		//Loop through each solution to concatenate them
+		for (int i = 1; i < SolutionArray.length; i++) {
+			//Concatenate " -> "
+			SolutionString = SolutionString + " -> ";
+			//Concatenate location id
+			SolutionString = SolutionString + String.valueOf(SolutionArray[i]);
+		}
+		//Concatenate "HOME"
+		SolutionString = SolutionString + "HOME";
+		//Return best solution in string
+		return SolutionString;
 
 	}
 
@@ -272,7 +288,12 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	private void updateBestSolution(int index) {
 		
 		// TODO
-		
+		//Retrieve and update solution representation
+		int[] aiRepresentation = aoMemoryOfSolutions[index].getSolutionRepresentation().getSolutionRepresentation();
+		oBestSolution.getSolutionRepresentation().setSolutionRepresentation(aiRepresentation);
+		//Retrieve and update objective function value
+		double objectiveFunctionValue = aoMemoryOfSolutions[index].getObjectiveFunctionValue();
+		oBestSolution.setObjectiveFunctionValue(objectiveFunctionValue);
 	}
 	
 	@Override

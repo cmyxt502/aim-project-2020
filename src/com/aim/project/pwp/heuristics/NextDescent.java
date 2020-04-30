@@ -36,11 +36,11 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
 
 	@Override
 	public boolean usesIntensityOfMutation() {
-
+		return false;
 	}
 
 	@Override
 	public boolean usesDepthOfSearch() {
-
+		return true;
 	}
 }
