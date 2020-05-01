@@ -18,8 +18,27 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
 	}
 
 	@Override
-	public double apply(PWPSolutionInterface solution, double depthOfSearch, double intensityOfMutation) {
-
+	public double apply(PWPSolutionInterface oSolution, double depthOfSearch, double intensityOfMutation) {
+		//Get length of solution
+		int solutionLength = oSolution.getNumberOfLocations();
+		//Calculate apply times
+		double tempIOM = intensityOfMutation * 5;
+		int times = (int)Math.pow(2, tempIOM);
+		if (times > 32) {
+			times = 32;
+		}
+		//For each execution
+		for (int i = 0; i < times; i++) {
+			//Random index
+			int applyLocation = oRandom.nextInt(solutionLength);
+			int nextLocation = applyLocation % solutionLength;
+			//Swap
+			int tempIndex = oSolution.getSolutionRepresentation().getSolutionRepresentation()[applyLocation];
+			oSolution.getSolutionRepresentation().getSolutionRepresentation()[applyLocation] = oSolution.getSolutionRepresentation().getSolutionRepresentation()[nextLocation];
+			oSolution.getSolutionRepresentation().getSolutionRepresentation()[nextLocation] = tempIndex;
+		}
+		//Return solution
+		return oSolution.getObjectiveFunctionValue();
 	}
 
 	@Override

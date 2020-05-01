@@ -44,6 +44,11 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	private ObjectiveFunctionInterface oObjectiveFunction;
 	
 	private final long seed;
+	
+	HeuristicInterface currentHeuristic;
+	
+	double dDepthOfSearch = 2;
+	double dIntensityOfMutation = 0.5;
 		
 	public AIM_PWP(long seed) {
 		
@@ -52,6 +57,7 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		// TODO - set default memory size and create the array of low-level heuristics
 		int heuristicsCount = getNumberOfHeuristics();
 		aoMemoryOfSolutions= new PWPSolutionInterface[2];
+		currentHeuristic = new InversionMutation(oRandom);
 	}
 	
 	public PWPSolutionInterface getSolution(int index) {
@@ -71,6 +77,10 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		
 		// TODO - apply heuristic and return the objective value of the candidate solution
 		//			remembering to keep track/update the best solution
+		double candidateOFV = currentHeuristic.apply(oSolution, dDepthOfSearch, dIntensityOfMutation);
+		if (candidateOFV < oBestSolution.getObjectiveFunctionValue()) {
+			oBestSolution = aoMemoryOfSolutions[candidateIndex].clone();
+		}
 	}
 
 	@Override
