@@ -26,7 +26,15 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
 
 	@Override
 	public double apply(PWPSolutionInterface oSolution, double dDepthOfSearch, double dIntensityOfMutation) {
-
+		int solutionLength = oSolution.getNumberOfLocations();
+		double initialOFV = oSolution.getObjectiveFunctionValue();
+		double bestOFV = initialOFV;
+		int startLocation = 0;
+		int times = (int)dDepthOfSearch * 5 + 1;
+		for (int i = 0; i < times; i++) {
+			startLocation = oRandom.nextInt(solutionLength);
+		}
+		//return 0;
 	}
 
 	@Override

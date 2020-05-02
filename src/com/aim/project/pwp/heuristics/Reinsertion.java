@@ -2,6 +2,7 @@ package com.aim.project.pwp.heuristics;
 
 import java.util.Random;
 
+import com.aim.project.pwp.PWPObjectiveFunction;
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 
@@ -48,6 +49,8 @@ public class Reinsertion extends HeuristicOperators implements HeuristicInterfac
 			}
 			oSolution.getSolutionRepresentation().getSolutionRepresentation()[insertionNode] = selectedValue;
 		}
+		double objectiveFunctionValue = PWPObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
+		oSolution.setObjectiveFunctionValue(objectiveFunctionValue);
 		return oSolution.getObjectiveFunctionValue();
 	}
 
