@@ -2,6 +2,7 @@ package com.aim.project.pwp.heuristics;
 
 import java.util.Random;
 
+import com.aim.project.pwp.PWPObjectiveFunction;
 import com.aim.project.pwp.interfaces.HeuristicInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 
@@ -25,7 +26,37 @@ public class DavissHillClimbing extends HeuristicOperators implements HeuristicI
 
 	@Override
 	public double apply(PWPSolutionInterface oSolution, double dDepthOfSearch, double dIntensityOfMutation) {
-
+		int solutionLength = oSolution.getNumberOfLocations();
+		double initialOFV = oSolution.getObjectiveFunctionValue();
+		double bestOFV = initialOFV;
+		double currentOFV = bestOFV + 1;
+		int startLocation = 0;
+		dDepthOfSearch = dDepthOfSearch * 5;
+		int times = (int)dDepthOfSearch + 1;
+		int temp = 0;
+		boolean accepted = false;
+		for (int i = 0; i < times; i++) {
+			//Reset acceptance flag
+			accepted = false;
+			do {
+				//Proceed to next node
+				startLocation = oRandom.nextInt(solutionLength);
+				//Swap node with next one
+				temp = oSolution.getSolutionRepresentation().getSolutionRepresentation()[startLocation];
+				oSolution.getSolutionRepresentation().getSolutionRepresentation()[startLocation] = oSolution.getSolutionRepresentation().getSolutionRepresentation()[startLocation + 1];
+				oSolution.getSolutionRepresentation().getSolutionRepresentation()[startLocation + 1] = temp;
+				//Get OFV value
+				currentOFV = PWPObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
+				//Rule if change is accepted
+				if(currentOFV > bestOFV) {
+					//Return to previous state
+				} else {
+					accepted = true;
+					bestOFV = currentOFV;
+				}
+			} while (!accepted);
+		}
+		return bestOFV;
 	}
 
 	@Override
