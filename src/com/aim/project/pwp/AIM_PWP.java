@@ -45,8 +45,6 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	
 	private final long seed;
 	
-	HeuristicInterface currentHeuristic;
-	
 	double dDepthOfSearch = 2;
 	double dIntensityOfMutation = 0.5;
 		
@@ -55,9 +53,17 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		super(seed);
 
 		// TODO - set default memory size and create the array of low-level heuristics
-		int heuristicsCount = getNumberOfHeuristics();
-		aoMemoryOfSolutions= new PWPSolutionInterface[2];
-		currentHeuristic = new InversionMutation(oRandom);
+		this.seed = seed;
+		aoMemoryOfSolutions = new PWPSolutionInterface[3];
+		aoHeuristics = new HeuristicInterface[] {
+				new InversionMutation(rng),
+				new AdjacentSwap(rng),
+				new Reinsertion(rng),
+                new NextDescent(rng),
+                new DavissHillClimbing(rng),
+                new OX(rng),
+                new CX(rng)
+        };
 	}
 	
 	public PWPSolutionInterface getSolution(int index) {
@@ -77,10 +83,17 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		
 		// TODO - apply heuristic and return the objective value of the candidate solution
 		//			remembering to keep track/update the best solution
-		double candidateOFV = currentHeuristic.apply(oSolution, dDepthOfSearch, dIntensityOfMutation);
-		if (candidateOFV < oBestSolution.getObjectiveFunctionValue()) {
-			oBestSolution = aoMemoryOfSolutions[candidateIndex].clone();
-		}
+		//Copy current to candidate index
+		copySolution(currentIndex, candidateIndex);
+		//Apply heuristic
+		double candidateOFV = aoHeuristics[hIndex].apply(
+				getSolution(candidateIndex),
+				this.dDepthOfSearch,
+				this.intensityOfMutation);
+		//Update best solution
+		updateBestSolution(candidateIndex);
+		//Return objective function value
+		return candidateOFV;
 	}
 
 	@Override
@@ -88,6 +101,20 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		
 		// TODO - apply heuristic and return the objective value of the candidate solution
 		//			remembering to keep track/update the best solution
+		//Copy one parent to candidate index
+		PWPSolutionInterface candidateSolution = aoMemoryOfSolutions[parent1Index].clone();
+		XOHeuristicInterface xoCandidateSolution = (XOHeuristicInterface) aoHeuristics[hIndex];
+		//Apply heuristic
+		double candidateOFV = xoCandidateSolution.apply(
+				aoMemoryOfSolutions[parent1Index],
+				aoMemoryOfSolutions[parent2Index],
+				candidateSolution,
+				this.dDepthOfSearch,
+				this.dIntensityOfMutation);
+		//Update best solution
+		updateBestSolution(candidateIndex);
+		//Return objective function value
+		return candidateOFV;
 	}
 
 	@Override
@@ -95,22 +122,7 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		
 		// TODO return the location IDs of the best solution including DEPOT and HOME locations
 		//		e.g. "DEPOT -> 0 -> 2 -> 1 -> HOME"
-		//Setup variables
-		int[] bestSolutionArray;
-		String bestSolutionString = "DEPOT"; //Set as "DEPOT" by default
-		//Retrieve solution representation
-		bestSolutionArray = oBestSolution.getSolutionRepresentation().getSolutionRepresentation();
-		//Loop through each solution to concatenate them
-		for (int i = 1; i < bestSolutionArray.length; i++) {
-			//Concatenate " -> "
-			bestSolutionString = bestSolutionString + " -> ";
-			//Concatenate location id
-			bestSolutionString = bestSolutionString + String.valueOf(bestSolutionArray[i]);
-		}
-		//Concatenate "HOME"
-		bestSolutionString = bestSolutionString + "HOME";
-		//Return best solution in string
-		return bestSolutionString;
+		return oBestSolution.toString();
 	}
 
 	@Override
@@ -153,7 +165,16 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	public int[] getHeuristicsOfType(HeuristicType type) {
 		
 		// TODO return an array of heuristic IDs based on the heuristic's type.
-		
+		switch(type) {
+			case MUTATION:
+				return new int[] {0, 1, 2};
+			case LOCAL_SEARCH:
+				return new int[]{3, 4};
+			case CROSSOVER:
+				return new int[]{5, 6};
+			default:
+				return null;
+		}
 	}
 
 	@Override
@@ -161,28 +182,20 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		
 		// TODO return the array of heuristic IDs that use depth of search.
 		//Setup variables
-		int totalHeuristics = aoHeuristics.length;
-		int totalDoSHeuristics = totalHeuristics; //Size of array that holds DoS mutation IDs
-		int heuristicsTemp[] = new int[totalHeuristics];
-		//Loop through all heuristics, set non-DoS ones' value in heuristicsTemp to -1
-		for (int i = 0; i < totalHeuristics; i++) {
-			heuristicsTemp[i] = i;
-			if (!aoHeuristics[i].usesDepthOfSearch()) {
-				heuristicsTemp[i] = -1;
-				totalDoSHeuristics--;
-			}
+		ArrayList<Integer> dosList = new ArrayList<>();
+		//Loop thru all heuristics
+		for (int i = 0; i < aoHeuristics.length; i++) {
+            if (aoHeuristics[i].usesDepthOfSearch()) {
+		           dosList.add(i);
+		    }
 		}
-		//Setup variables
-		int heuristicsDoS[] = new int[totalDoSHeuristics];
-		int k = 0;
-		//Loop through heuristicsTemp and copy non -1 values
-		for (int j = 0; j < totalHeuristics; j++) {
-			if(heuristicsTemp[j] != -1) {
-				heuristicsDoS[k] = heuristicsTemp[j];
-				k++;
-			}
+		//Setup return array
+		int[] dosArray = new int[dosList.size()];
+		//Loop thru array list
+		for (int j = 0; j < dosList.size(); j++) {
+			dosArray[j] = dosList.get(j);
 		}
-		return heuristicsDoS;
+		return dosArray;
 	}
 
 	@Override
@@ -190,28 +203,20 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		
 		// TODO return the array of heuristic IDs that use intensity of mutation.
 		//Setup variables
-		int totalHeuristics = aoHeuristics.length;
-		int totalIoMHeuristics = totalHeuristics; //Size of array that holds IoM mutation IDs
-		int heuristicsTemp[] = new int[totalHeuristics];
-		//Loop through all heuristics, set non-DoS ones' value in heuristicsTemp to -1
-		for (int i = 0; i < totalHeuristics; i++) {
-			heuristicsTemp[i] = i;
-			if (!aoHeuristics[i].usesIntensityOfMutation()) {
-				heuristicsTemp[i] = -1;
-				totalIoMHeuristics--;
-			}
+		ArrayList<Integer> iomList = new ArrayList<>();
+		//Loop thru all heuristics
+		for (int i = 0; i < aoHeuristics.length; i++) {
+            if (aoHeuristics[i].usesIntensityOfMutation()) {
+            	iomList.add(i);
+            }
+        }
+		//Setup return array
+		int[] iomArray = new int[iomList.size()];
+		//Loop thru array list
+		for (int j = 0; j < iomList.size(); j++) {
+			iomArray[j] = iomList.get(j);
 		}
-		//Setup variables
-		int heuristicsIoM[] = new int[totalIoMHeuristics];
-		int k = 0;
-		//Loop through heuristicsTemp and copy non -1 values
-		for (int j = 0; j < totalHeuristics; j++) {
-			if(heuristicsTemp[j] != -1) {
-				heuristicsIoM[k] = heuristicsTemp[j];
-				k++;
-			}
-		}
-		return heuristicsIoM;
+		return iomArray;
 	}
 
 	@Override
@@ -233,7 +238,9 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		
 		// TODO - initialise a solution in index 'index' 
 		// 		making sure that you also update the best solution!
-		
+		PWPSolutionInterface newSolution = oInstance.createSolution(InitialisationMode.RANDOM);
+        aoMemoryOfSolutions[index] = newSolution;
+        updateBestSolution(index);
 	}
 
 	// TODO implement the instance reader that this method uses
@@ -264,6 +271,14 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 		//		the existing solutions should be copied to the new memory at the same indices.
 		// IF the memory size is DECREASED, then
 		//		the first 'size' solutions are copied to the new memory.
+		if (aoMemoryOfSolutions == null) {
+            aoMemoryOfSolutions = new PWPSolutionInterface[size];
+        }
+		else {
+            PWPSolutionInterface[] newMem = new PWPSolutionInterface[size];
+            System.arraycopy(aoMemoryOfSolutions, 0, newMem, 0, Math.min(aoMemoryOfSolutions.length, size));
+            aoMemoryOfSolutions = newMem;
+        }
 	}
 
 	@Override
