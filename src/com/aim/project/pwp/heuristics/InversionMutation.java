@@ -21,40 +21,35 @@ public class InversionMutation extends HeuristicOperators implements HeuristicIn
 	@Override
 	public double apply(PWPSolutionInterface oSolution, double dDepthOfSearch, double dIntensityOfMutation) {
 		//Get length of solution
-		int solutionLength = oSolution.getNumberOfLocations();
+		int solutionLength = oSolution.getNumberOfLocations() - 2;
 		//Calculate apply times
-		double tempIOM = dIntensityOfMutation * 5;
-		int times = (int)tempIOM + 1;
-		if (times > 6) {
-			times = 6;
-		}
+		int times = getTimes(dIntensityOfMutation);
+		
+		double currentOFV = oSolution.getObjectiveFunctionValue();
+		
 		for (int i = 0; i < times; i++) {
 			//Generate two distinct index
 			int startIndex = oRandom.nextInt(solutionLength);
-			int endIndex = startIndex;
-			int temp = 0;
-			do {
+			int endIndex = oRandom.nextInt(solutionLength);
+			while (startIndex == endIndex) {
 				endIndex = oRandom.nextInt(solutionLength);
-			} while(startIndex == endIndex);
-			//Swap if end comes before start
-			if (startIndex < endIndex) {
-				startIndex = startIndex + endIndex;
-				endIndex = startIndex - endIndex;
-				startIndex = startIndex - endIndex;
 			}
-			while(startIndex < endIndex) {
-				//Swap values
-				temp = oSolution.getSolutionRepresentation().getSolutionRepresentation()[startIndex];
-				oSolution.getSolutionRepresentation().getSolutionRepresentation()[startIndex] = oSolution.getSolutionRepresentation().getSolutionRepresentation()[endIndex];
-				oSolution.getSolutionRepresentation().getSolutionRepresentation()[endIndex] = temp;
-				temp = 0;
-				//Increment counter
-				startIndex++;
-				endIndex--;
+			int temp = 0;
+			//Set start & end to respective location
+			if(startIndex > endIndex) {
+				temp = startIndex;
+				startIndex = endIndex;
+				endIndex = temp;
 			}
+			//Calculate OFV value
+			currentOFV = deltaIM(oSolution, currentOFV, startIndex, endIndex);
+			//Swap each node between start & end
+			for (int j = 0; j < (endIndex + 1 - startIndex) / 2; i++) {
+				swap(oSolution, startIndex + j, endIndex - j);
+			}
+			//Update OFV value
+			oSolution.setObjectiveFunctionValue(currentOFV);
 		}
-		double objectiveFunctionValue = PWPObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
-		oSolution.setObjectiveFunctionValue(objectiveFunctionValue);
 		return oSolution.getObjectiveFunctionValue();
 	}
 	

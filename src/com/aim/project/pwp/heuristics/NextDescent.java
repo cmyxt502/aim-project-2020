@@ -27,37 +27,30 @@ public class NextDescent extends HeuristicOperators implements HeuristicInterfac
 
 	@Override
 	public double apply(PWPSolutionInterface oSolution, double dDepthOfSearch, double dIntensityOfMutation) {
-		int solutionLength = oSolution.getNumberOfLocations();
-		double initialOFV = oSolution.getObjectiveFunctionValue();
-		double bestOFV = initialOFV;
-		double currentOFV = bestOFV + 1;
+		int solutionLength = oSolution.getNumberOfLocations() - 2;
+		double currentOFV = oSolution.getObjectiveFunctionValue();
+		//Randomly select start position
 		int startLocation = oRandom.nextInt(solutionLength);
-		dDepthOfSearch = dDepthOfSearch * 5;
-		int times = (int)dDepthOfSearch + 1;
-		int temp = 0;
-		boolean accepted = false;
+		
+		int times = super.getTimes(dDepthOfSearch);
+		int trace = 0;
+		
 		for (int i = 0; i < times; i++) {
-			//Reset acceptance flag
-			accepted = false;
-			do {
-				//Proceed to next node
-				startLocation = (startLocation + 1) % solutionLength;
-				//Swap node with next one
-				temp = oSolution.getSolutionRepresentation().getSolutionRepresentation()[startLocation];
-				oSolution.getSolutionRepresentation().getSolutionRepresentation()[startLocation] = oSolution.getSolutionRepresentation().getSolutionRepresentation()[startLocation + 1];
-				oSolution.getSolutionRepresentation().getSolutionRepresentation()[startLocation + 1] = temp;
-				//Get OFV value
-				currentOFV = PWPObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
-				//Rule if change is accepted
-				if(currentOFV > bestOFV) {
-					//Return to previous state
-				} else {
-					accepted = true;
-					bestOFV = currentOFV;
+			if (trace < solutionLength) {
+				int startNode = (startLocation + i) % solutionLength;
+				int nextNode = (startLocation + i + 1) % solutionLength;
+				//Calculate new OFV
+				double newOFV = deltaND(oSolution, currentOFV, startNode, nextNode);
+				//When better solution found
+				if (newOFV < currentOFV) {
+					currentOFV = newOFV;
+					oSolution.setObjectiveFunctionValue(currentOFV);
+					super.swap(oSolution, startNode, nextNode);
 				}
-			} while (!accepted);
+				trace ++;
+			}
 		}
-		return bestOFV;
+		return currentOFV;
 	}
 
 	@Override

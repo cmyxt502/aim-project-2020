@@ -20,27 +20,25 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
 
 	@Override
 	public double apply(PWPSolutionInterface oSolution, double depthOfSearch, double intensityOfMutation) {
-		//Get length of solution
-		int solutionLength = oSolution.getNumberOfLocations();
+		//Get length of solution (excluding depot & home)
+		int solutionLength = oSolution.getNumberOfLocations() - 2;
+		//Get OFV value before heuristics
+		double currentOFV = oSolution.getObjectiveFunctionValue();
 		//Calculate apply times
-		double tempIOM = intensityOfMutation * 5;
-		int times = (int)Math.pow(2, tempIOM);
-		if (times > 32) {
-			times = 32;
-		}
+		int times = getTimesAS(intensityOfMutation);
 		//For each execution
 		for (int i = 0; i < times; i++) {
 			//Random index
 			int applyLocation = oRandom.nextInt(solutionLength);
-			int nextLocation = applyLocation % solutionLength;
+			int nextLocation = (applyLocation + 1) % solutionLength;
+			//Calculate OFV value
+			currentOFV = deltaAS(oSolution, currentOFV, applyLocation, nextLocation);
 			//Swap
-			int tempIndex = oSolution.getSolutionRepresentation().getSolutionRepresentation()[applyLocation];
-			oSolution.getSolutionRepresentation().getSolutionRepresentation()[applyLocation] = oSolution.getSolutionRepresentation().getSolutionRepresentation()[nextLocation];
-			oSolution.getSolutionRepresentation().getSolutionRepresentation()[nextLocation] = tempIndex;
+			super.swap(oSolution, applyLocation, nextLocation);
+			//Update OFV value
+			oSolution.setObjectiveFunctionValue(currentOFV);
 		}
 		//Return solution
-		double objectiveFunctionValue = PWPObjectiveFunction.getObjectiveFunctionValue(oSolution.getSolutionRepresentation());
-		oSolution.setObjectiveFunctionValue(objectiveFunctionValue);
 		return oSolution.getObjectiveFunctionValue();
 	}
 
@@ -57,6 +55,10 @@ public class AdjacentSwap extends HeuristicOperators implements HeuristicInterfa
 	@Override
 	public boolean usesDepthOfSearch() {
 		return false;
+	}
+	
+	private double deltaOFV() {
+		return -1;
 	}
 
 }

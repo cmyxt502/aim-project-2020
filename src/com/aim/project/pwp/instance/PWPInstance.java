@@ -11,6 +11,7 @@ import com.aim.project.pwp.interfaces.ObjectiveFunctionInterface;
 import com.aim.project.pwp.interfaces.PWPInstanceInterface;
 import com.aim.project.pwp.interfaces.PWPSolutionInterface;
 import com.aim.project.pwp.solution.SolutionRepresentation;
+import com.aimframework.helperfunctions.ArrayMethods;
 import com.aim.project.pwp.solution.PWPSolution;
 
 
@@ -52,28 +53,22 @@ public class PWPInstance implements PWPInstanceInterface {
 		//Create variables
 		PWPSolution returnSolution = null;
 		SolutionRepresentation returnSolutionRepresentation = null;
-		int[] solutionArray = new int[this.iNumberOfLocations];
+		int[] solutionArray = new int[this.iNumberOfLocations - 2];
 		int temp = -1;
 		double returnObjectiveFunctionValue = -1;
 		//Make sure random is used
 		if(mode == InitialisationMode.RANDOM) {
 			//Initialise ascending solution array
-			for (int i = 0; i < this.iNumberOfLocations; i++) {
+			for (int i = 0; i < this.iNumberOfLocations - 2; i++) {
 				solutionArray[i] = i;
 			}
-			//Shuffle the solution array, avoiding first (postal depot) and last element (home address)
-			for (int i = 1; i < this.iNumberOfLocations - 1; i++) {
-				//Choose random index to swap
-				//Included mechanism to avoid selecting first and last element
-				int randomIndex = this.oRandom.nextInt(this.iNumberOfLocations - 2) + 1;
-				//Perform swap
-				temp = solutionArray[randomIndex];
-				solutionArray[randomIndex] = solutionArray[i];
-				solutionArray[i] = temp;
-			}
+			//Shuffle the solution array
+			solutionArray = ArrayMethods.shuffle(solutionArray, oRandom);
 		}
 		//Filling return variables
 		returnSolutionRepresentation = new SolutionRepresentation(solutionArray);
+		returnObjectiveFunctionValue = oObjectiveFunction.getObjectiveFunctionValue(returnSolutionRepresentation);
+		
 		returnSolution = new PWPSolution(returnSolutionRepresentation, returnObjectiveFunctionValue);
 		return returnSolution;
 	}
@@ -119,14 +114,19 @@ public class PWPInstance implements PWPInstanceInterface {
 		int[] solutionRepresentation = new int[this.iNumberOfLocations];
 		int temp = -1;
 		ArrayList<Location> returnLocationArray = new ArrayList<Location>();
+		//Get solution representation array
+		solutionRepresentation = oSolution.getSolutionRepresentation().getSolutionRepresentation();
+		//Add depot
+		returnLocationArray.add(oPostalDepotLocation);
+		//Add delivery adderss
 		for (int i = 0; i < this.iNumberOfLocations; i++) {
-			//Get solution representation array
-			solutionRepresentation = oSolution.getSolutionRepresentation().getSolutionRepresentation();
 			//Get each location by its order
 			temp = solutionRepresentation[i];
 			//Add respective element to return location array
 			returnLocationArray.add(this.aoLocations[temp]);
 		}
+		//Add home
+		returnLocationArray.add(oHomeAddressLocation);
 		return returnLocationArray;
 	}
 

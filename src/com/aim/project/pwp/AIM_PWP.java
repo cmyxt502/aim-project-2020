@@ -313,12 +313,9 @@ public class AIM_PWP extends ProblemDomain implements Visualisable {
 	private void updateBestSolution(int index) {
 		
 		// TODO
-		//Retrieve and update solution representation
-		int[] aiRepresentation = aoMemoryOfSolutions[index].getSolutionRepresentation().getSolutionRepresentation();
-		oBestSolution.getSolutionRepresentation().setSolutionRepresentation(aiRepresentation);
-		//Retrieve and update objective function value
-		double objectiveFunctionValue = aoMemoryOfSolutions[index].getObjectiveFunctionValue();
-		oBestSolution.setObjectiveFunctionValue(objectiveFunctionValue);
+		if (oBestSolution == null || getFunctionValue(index) < getBestSolutionValue()) {
+            oBestSolution = getSolution(index);
+		}
 	}
 	
 	@Override
